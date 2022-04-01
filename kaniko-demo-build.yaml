@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko-demo-build
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    args: ["--dockerfile=Dockerfile",
+            "--context=git://github.com/pet2cattle/kaniko-demo.git#refs/heads/main",
+            "--destination=jordiprats/demo-kaniko-build:kaniko"]
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: "/kaniko/.docker"
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: dockerhub-registry
+      items:
+       - key: .dockerconfigjson
+         path: config.json
+  restartPolicy: Never
